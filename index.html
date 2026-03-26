@@ -3,84 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hero Xtreme Digital Speedometer</title>
-    <!-- Importing Digital and Speedometer Fonts -->
+    <title>Hero Xtreme 125R - Pro System</title>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
+        /* --- CSS STYLES --- */
         :root {
             --hero-red: #ff0033;
-            --hero-dark-red: #990011;
-            --hero-black: #0a0a0a;
-            --hero-grey: #1a1a1a;
-            --hero-silver: #e0e0e0;
-            --digital-glow: 0 0 10px rgba(255, 0, 51, 0.7);
-            --text-glow: 0 0 5px rgba(255, 255, 255, 0.5);
+            --hero-blue: #00ccff;
+            --bg-dark: #050505;
+            --panel-bg: #111;
         }
 
-        * {
-            box-sizing: border-box;
-            user-select: none; /* Prevent text selection on touch */
-        }
+        * { box-sizing: border-box; user-select: none; }
 
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark);
+            color: #fff;
             font-family: 'Orbitron', sans-serif;
-            color: var(--hero-silver);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* --- Header & Status Bar --- */
+        /* Header */
         header {
+            padding: 15px;
+            background: #111;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: var(--hero-grey);
             border-bottom: 2px solid var(--hero-red);
-            z-index: 10;
         }
-
-        .brand {
-            font-family: 'Black Ops One', cursive;
-            color: var(--hero-red);
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: var(--digital-glow);
-        }
-
-        .status-icons {
-            display: flex;
-            gap: 15px;
-            font-size: 0.9rem;
-        }
-
-        .icon {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            opacity: 0.5;
-            transition: opacity 0.3s, color 0.3s;
-        }
-
-        .icon.active {
-            opacity: 1;
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
-        }
-
-        .icon.bluetooth-icon.active {
-            color: #00ccff;
-            text-shadow: 0 0 5px #00ccff;
-        }
-
-        /* --- Main Dashboard Area --- */
+        .brand { font-family: 'Black Ops One'; color: var(--hero-red); font-size: 1.2rem; }
+        
+        /* Main Dashboard */
         main {
             flex: 1;
             display: flex;
@@ -88,523 +46,299 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(circle at center, #222 0%, #000 70%);
         }
 
-        /* --- Circular Gauge (RPM/Speed Arc) --- */
-        .gauge-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* SVG Circle Styling */
-        .gauge-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            transform: rotate(135deg); /* Start from bottom left */
-        }
-
-        .gauge-bg {
-            fill: none;
-            stroke: #333;
-            stroke-width: 12;
-        }
-
-        .gauge-progress {
-            fill: none;
-            stroke: var(--hero-red);
-            stroke-width: 12;
-            stroke-dasharray: 660; /* Circumference approx */
-            stroke-dashoffset: 660; /* Start empty */
-            transition: stroke-dashoffset 0.1s linear;
+        /* Gauge */
+        .gauge-container { position: relative; width: 280px; height: 280px; }
+        .gauge-svg { transform: rotate(135deg); width: 100%; height: 100%; }
+        .gauge-bg { fill: none; stroke: #333; stroke-width: 10; }
+        .gauge-fill { 
+            fill: none; stroke: var(--hero-red); stroke-width: 10; 
+            stroke-dasharray: 580; stroke-dashoffset: 580;
+            transition: stroke-dashoffset 0.2s;
             stroke-linecap: round;
-            filter: drop-shadow(0 0 5px var(--hero-red));
-        }
-
-        /* Center Digital Display */
-        .digital-readout {
-            z-index: 2;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transform: translateY(-10px); /* Visual centering adjustment */
-        }
-
-        .speed-label {
-            font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-
-        .speed-value {
-            font-size: 5rem;
-            font-weight: 900;
-            line-height: 1;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .speed-unit {
-            font-size: 1.2rem;
-            color: var(--hero-red);
-            margin-top: 5px;
-            font-weight: 700;
-        }
-
-        /* --- Info Grid (Odometer, Time, etc) --- */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            width: 100%;
-            padding: 0 20px;
-            margin-top: 30px;
-            gap: 10px;
-        }
-
-        .info-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #333;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .info-label {
-            font-size: 0.7rem;
-            color: #aaa;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .info-val {
-            font-size: 1.1rem;
-            color: var(--hero-red);
-            font-weight: bold;
-            text-shadow: var(--text-glow);
-        }
-
-        /* --- Footer / Gear Indicator --- */
-        footer {
-            padding: 20px;
-            background: linear-gradient(to top, #111, transparent);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .gear-indicator {
-            text-align: center;
-        }
-
-        .gear-label {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .gear-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #fff;
-            width: 60px;
-            height: 60px;
-            background: #222;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--hero-red);
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.2);
-        }
-
-        /* --- Start Overlay --- */
-        #start-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .hero-logo-large {
-            font-family: 'Black Ops One', cursive;
-            font-size: 3rem;
-            color: var(--hero-red);
-            margin-bottom: 10px;
-            animation: pulse 2s infinite;
-        }
-
-        .start-btn {
-            background: transparent;
-            color: #fff;
-            border: 2px solid var(--hero-red);
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: all 0.3s;
-            border-radius: 5px;
-            box-shadow: 0 0 15px var(--hero-red);
-        }
-
-        .start-btn:active {
-            background: var(--hero-red);
-            color: #000;
-        }
-
-        .warning {
-            color: #888;
-            font-size: 0.8rem;
-            margin-top: 20px;
-            max-width: 300px;
-            line-height: 1.4;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { text-shadow: 0 0 10px var(--hero-red); }
-            50% { text-shadow: 0 0 25px var(--hero-red); }
-            100% { text-shadow: 0 0 10px var(--hero-red); }
-        }
-
-        /* Mode Toggle */
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
-        #unit-toggle {
-            background: #333;
-            border: none;
-            color: #fff;
-            padding: 5px 10px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            border-radius: 3px;
+        .digital-display {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -40%);
+            text-align: center;
+        }
+        .speed-val { font-size: 4rem; font-weight: 900; line-height: 1; text-shadow: 0 0 10px rgba(255,0,51,0.5); }
+        .unit { font-size: 1rem; color: #888; }
+
+        /* Controls */
+        .controls {
+            display: flex; gap: 10px; margin-top: 20px;
+        }
+        .btn {
+            background: #222; border: 1px solid #444; color: white;
+            padding: 10px 20px; font-family: 'Orbitron'; cursor: pointer;
+            border-radius: 4px; text-transform: uppercase; font-size: 0.8rem;
+        }
+        .btn:hover { background: #333; }
+        .btn.active { background: var(--hero-blue); color: #000; border-color: var(--hero-blue); }
+        .btn-danger { border-color: var(--hero-red); color: var(--hero-red); }
+        
+        /* History Panel (Backend Data) */
+        #history-panel {
+            background: var(--panel-bg);
+            padding: 15px;
+            border-top: 1px solid #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-title { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
+        .ride-log {
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem; padding: 8px 0;
+            border-bottom: 1px solid #222;
+        }
+        .ride-log span:first-child { color: var(--hero-red); }
+
+        /* Status Toast */
+        #toast {
+            position: absolute; bottom: 220px;
+            background: rgba(0,0,0,0.8); color: #fff;
+            padding: 10px 20px; border-radius: 5px;
+            opacity: 0; transition: opacity 0.3s;
+            pointer-events: none; border: 1px solid var(--hero-blue);
         }
 
     </style>
 </head>
 <body>
 
-    <!-- Start Overlay for Permissions -->
-    <div id="start-overlay">
-        <div class="hero-logo-large">HERO XTREME</div>
-        <p style="color: #fff; letter-spacing: 2px;">DIGITAL CONSOLE</p>
-        <button class="start-btn" onclick="startSystem()">Start Engine</button>
-        <p class="warning">GPS access is required for speed calculation. Please enable Location Services.</p>
-    </div>
-
-    <!-- Top Bar -->
     <header>
-        <div class="brand">Hero</div>
-        <div class="status-icons">
-            <div class="icon" id="bt-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/>
-                </svg>
-                BT
-            </div>
-            <div class="icon" id="gps-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
-                </svg>
-            </div>
-            <div class="toggle-container">
-                 <button id="unit-toggle" onclick="toggleUnit()">KMH</button>
-            </div>
-        </div>
+        <div class="brand">XTREME SYS</div>
+        <div style="font-size:0.8rem; color:#666;">v2.0 PRO</div>
     </header>
 
-    <!-- Main Display -->
     <main>
         <div class="gauge-container">
-            <!-- SVG Circle Gauge -->
             <svg class="gauge-svg" viewBox="0 0 240 240">
-                <!-- Background Arc (270 degrees total: 135 to 405) -->
-                <circle class="gauge-bg" cx="120" cy="120" r="105"></circle>
-                <!-- Progress Arc -->
-                <circle id="gauge-progress" class="gauge-progress" cx="120" cy="120" r="105"></circle>
+                <circle class="gauge-bg" cx="120" cy="120" r="100"></circle>
+                <circle id="gauge-bar" class="gauge-fill" cx="120" cy="120" r="100"></circle>
             </svg>
-
-            <div class="digital-readout">
-                <div class="speed-label">SPEED</div>
-                <div class="speed-value" id="speed-display">0</div>
-                <div class="speed-unit" id="unit-display">KM/H</div>
+            <div class="digital-display">
+                <div id="speed" class="speed-val">0</div>
+                <div class="unit">KM/H</div>
             </div>
         </div>
 
-        <div class="info-grid">
-            <div class="info-box">
-                <div class="info-label">ODO</div>
-                <div class="info-val" id="odo-display">0.0</div>
-            </div>
-            <div class="info-box">
-                <div class="info-label">TIME</div>
-                <div class="info-val" id="time-display">00:00</div>
-            </div>
-            <div class="info-box">
-                <div class="info-label">AVG SPD</div>
-                <div class="info-val" id="avg-speed">0</div>
-            </div>
+        <div class="controls">
+            <button id="start-btn" class="btn" onclick="startTracking()">Start Ride</button>
+            <button id="stop-btn" class="btn btn-danger" onclick="stopTracking()" disabled>End & Save</button>
+            <button id="bt-btn" class="btn" onclick="toggleBluetooth()">BT OFF</button>
         </div>
+
+        <div id="toast">Connecting to Backend...</div>
     </main>
 
-    <!-- Footer Gear Indicator -->
-    <footer>
-        <div class="gear-indicator">
-            <div class="gear-label">GEAR</div>
-            <div class="gear-number" id="gear-display">N</div>
-        </div>
-        <div style="text-align: right; color: #555; font-size: 0.7rem;">
-            SYSTEM READY<br>
-            <span id="coord-display">--.----, --.----</span>
-        </div>
-    </footer>
+    <!-- Backend Data Display -->
+    <div id="history-panel">
+        <div class="history-title">RIDE HISTORY (From Backend)</div>
+        <div id="history-list">Loading...</div>
+    </div>
 
     <script>
-        // --- State Variables ---
-        let isRunning = false;
-        let watchId = null;
-        let lastPosition = null;
-        let lastTime = 0;
-        let totalDistance = 0; // in km
-        let totalSpeedSamples = 0;
-        let cumulativeSpeed = 0;
+        /* --- FRONTEND LOGIC --- */
         
         // Configuration
-        let useMetric = true; // true = km/h, false = mph
-        const MAX_SPEED_KMH = 140; // Max speed for gauge scaling
-        const GAUGE_FULL_DASH = 660; // Should match stroke-dasharray in CSS
+        const API_URL = 'http://localhost:3000/api'; // Change this if hosting online
+        
+        // State
+        let isTracking = false;
+        let isBluetoothMode = false;
+        let watchId = null;
+        let startTime = 0;
+        let maxSpeed = 0;
+        let totalDist = 0;
+        
+        // GPS Vars
+        let lastPos = null;
+        let lastTime = 0;
 
-        // --- DOM Elements ---
-        const speedDisplay = document.getElementById('speed-display');
-        const gaugeProgress = document.getElementById('gauge-progress');
-        const odoDisplay = document.getElementById('odo-display');
-        const timeDisplay = document.getElementById('time-display');
-        const avgSpeedDisplay = document.getElementById('avg-speed');
-        const gearDisplay = document.getElementById('gear-display');
-        const btIcon = document.getElementById('bt-icon');
-        const gpsIcon = document.getElementById('gps-icon');
-        const unitToggle = document.getElementById('unit-toggle');
-        const unitDisplay = document.getElementById('unit-display');
-        const coordDisplay = document.getElementById('coord-display');
+        // Elements
+        const speedEl = document.getElementById('speed');
+        const gaugeBar = document.getElementById('gauge-bar');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const btBtn = document.getElementById('bt-btn');
+        const historyList = document.getElementById('history-list');
+        const toast = document.getElementById('toast');
 
-        // --- Initialization ---
-        function startSystem() {
-            document.getElementById('start-overlay').style.display = 'none';
-            isRunning = true;
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            fetchHistory(); // Load data from backend on start
+        };
 
-            // Simulate Bluetooth Connection
-            simulateBluetooth();
-
-            // Start Clock
-            setInterval(updateClock, 1000);
-            updateClock();
-
-            // Request GPS and start watching
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                });
-
-                watchId = navigator.geolocation.watchPosition(
-                    handlePositionUpdate, 
-                    errorCallback, 
-                    {
-                        enableHighAccuracy: true,
-                        maximumAge: 0,
-                        timeout: 5000
-                    }
-                );
-            } else {
-                alert("Geolocation is not supported by your browser.");
-            }
-        }
-
-        // --- GPS Logic ---
-        function handlePositionUpdate(position) {
-            if (!lastPosition) {
-                lastPosition = position;
-                lastTime = Date.now();
+        // --- GPS FUNCTIONS ---
+        function startTracking() {
+            if (!navigator.geolocation) {
+                showToast("GPS not supported");
                 return;
             }
 
-            const currentTime = Date.now();
-            const timeDiff = (currentTime - lastTime) / 1000; // seconds
-
-            // Update Coordinates (Decorative)
-            const lat = position.coords.latitude.toFixed(4);
-            const lng = position.coords.longitude.toFixed(4);
-            coordDisplay.innerText = `${lat}, ${lng}`;
-
-            // GPS Icon Active
-            gpsIcon.classList.add('active');
-
-            // Calculate Distance (Haversine simplified)
-            const R = 6371; // Radius of the earth in km
-            const dLat = deg2rad(position.coords.latitude - lastPosition.coords.latitude);
-            const dLon = deg2rad(position.coords.longitude - lastPosition.coords.longitude);
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(deg2rad(lastPosition.coords.latitude)) * Math.cos(deg2rad(position.coords.latitude)) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2); 
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-            const distanceKm = R * c;
-
-            // Only process if time has passed and distance is reasonable
-            if (timeDiff > 0) {
-                const speedKmh = (distanceKm / timeDiff) * 3600;
-                
-                // Filter noise: if speed is crazy high or just jitter, ignore it
-                // Also allow 0 if stopped
-                if (speedKmh < 300) { 
-                    totalDistance += distanceKm;
-                    
-                    // Update Averages
-                    cumulativeSpeed += speedKmh;
-                    totalSpeedSamples++;
-
-                    updateDashboard(speedKmh);
-                }
-            }
-
-            lastPosition = position;
-            lastTime = currentTime;
-        }
-
-        function successCallback(position) {
-            // Initial fix obtained
-            handlePositionUpdate(position);
-        }
-
-        function errorCallback(error) {
-            console.warn("GPS Error: " + error.message);
-            gpsIcon.classList.remove('active');
-            // Don't alert repeatedly, just let the user know via icon
-        }
-
-        // --- Dashboard Updates ---
-        function updateDashboard(speedKmh) {
-            let displaySpeed = speedKmh;
-            let maxScale = MAX_SPEED_KMH;
-
-            if (!useMetric) {
-                displaySpeed = speedKmh * 0.621371;
-                maxScale = MAX_SPEED_KMH * 0.621371;
-            }
-
-            // Smooth out jitter visually
-            displaySpeed = Math.floor(displaySpeed);
-
-            // 1. Update Digital Number
-            speedDisplay.innerText = displaySpeed;
-
-            // 2. Update Gauge Arc
-            // Calculate percentage of max speed
-            let percentage = displaySpeed / maxScale;
-            if (percentage > 1) percentage = 1;
+            isTracking = true;
+            startTime = Date.now();
+            maxSpeed = 0;
+            totalDist = 0;
+            lastPos = null;
             
-            // Stroke Dashoffset: Full length = empty, 0 = full
-            // We only want to fill 270 degrees (approx 75% of circle)
-            // Our CSS dasharray is 660. 
-            // Offset = 660 - (660 * percentage)
-            const offset = GAUGE_FULL_DASH - (GAUGE_FULL_DASH * percentage);
-            gaugeProgress.style.strokeDashoffset = offset;
+            // UI Updates
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            startBtn.classList.add('active');
 
-            // Color change at high speed
-            if (percentage > 0.8) {
-                gaugeProgress.style.stroke = "#ff0000"; // Warning Red
+            watchId = navigator.geolocation.watchPosition(updatePosition, gpsError, {
+                enableHighAccuracy: true,
+                maximumAge: 0,
+                timeout: 5000
+            });
+            
+            showToast("Ride Started");
+        }
+
+        function stopTracking() {
+            if (!isTracking) return;
+            isTracking = false;
+
+            navigator.geolocation.clearWatch(watchId);
+            
+            // UI Updates
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            startBtn.classList.remove('active');
+
+            // Send Data to Backend
+            saveRideToBackend();
+        }
+
+        function updatePosition(position) {
+            const now = Date.now();
+            
+            if (lastPos) {
+                // Calculate Distance & Speed
+                const dLat = (position.coords.latitude - lastPos.latitude) * (Math.PI/180);
+                const dLon = (position.coords.longitude - lastPos.longitude) * (Math.PI/180);
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lastPos.latitude * (Math.PI/180)) * Math.cos(position.coords.latitude * (Math.PI/180)) * 
+                          Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distKm = 6371 * c;
+                const timeHours = (now - lastTime) / 3600000;
+
+                let speed = 0;
+                if (timeHours > 0) {
+                    speed = distKm / timeHours;
+                }
+
+                // Update State
+                totalDist += distKm;
+                if (speed > maxSpeed) maxSpeed = speed;
+
+                // Update Dashboard
+                updateDashboard(speed);
+            }
+
+            lastPos = position;
+            lastTime = now;
+        }
+
+        function updateDashboard(speed) {
+            // Update Text
+            speedEl.innerText = Math.floor(speed);
+
+            // Update Arc (Max 140kmh)
+            const maxScale = 140;
+            let percent = speed / maxScale;
+            if (percent > 1) percent = 1;
+            const offset = 580 - (580 * percent);
+            gaugeBar.style.strokeDashoffset = offset;
+        }
+
+        function gpsError() {
+            showToast("GPS Signal Lost");
+        }
+
+        // --- BACKEND INTEGRATION ---
+        async function saveRideToBackend() {
+            const duration = Date.now() - startTime;
+            const rideData = {
+                date: new Date().toISOString(),
+                distance: parseFloat(totalDist.toFixed(2)),
+                maxSpeed: Math.floor(maxSpeed),
+                duration: duration // in milliseconds
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/rides`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rideData)
+                });
+                
+                if (response.ok) {
+                    showToast("Ride Saved to Server!");
+                    fetchHistory(); // Refresh list
+                } else {
+                    showToast("Error saving ride");
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Server Connection Failed");
+            }
+        }
+
+        async function fetchHistory() {
+            try {
+                const response = await fetch(`${API_URL}/rides`);
+                const data = await response.json();
+                
+                historyList.innerHTML = '';
+                if (data.length === 0) {
+                    historyList.innerHTML = '<div style="color:#555; text-align:center;">No rides recorded yet.</div>';
+                    return;
+                }
+
+                // Show last 5 rides
+                data.slice(-5).reverse().forEach(ride => {
+                    const dateObj = new Date(ride.date);
+                    const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const div = document.createElement('div');
+                    div.className = 'ride-log';
+                    div.innerHTML = `
+                        <span>${ride.distance} km</span>
+                        <span>${ride.maxSpeed} km/h</span>
+                        <span style="color:#888; font-size:0.7rem;">${dateStr}</span>
+                    `;
+                    historyList.appendChild(div);
+                });
+
+            } catch (error) {
+                historyList.innerHTML = '<div style="color:red;">Failed to connect to Backend.</div>';
+            }
+        }
+
+        // --- UTILS ---
+        function toggleBluetooth() {
+            isBluetoothMode = !isBluetoothMode;
+            if (isBluetoothMode) {
+                btBtn.classList.add('active');
+                btBtn.innerText = "BT ON";
+                showToast("Bluetooth Voice Active");
             } else {
-                gaugeProgress.style.stroke = "var(--hero-red)"; // Normal Hero Red
-            }
-
-            // 3. Update Odometer
-            odoDisplay.innerText = totalDistance.toFixed(1);
-
-            // 4. Update Average Speed
-            if (totalSpeedSamples > 0) {
-                let avg = cumulativeSpeed / totalSpeedSamples;
-                if (!useMetric) avg = avg * 0.621371;
-                avgSpeedDisplay.innerText = Math.floor(avg);
-            }
-
-            // 5. Update Gear (Simulated based on speed)
-            updateGear(displaySpeed);
-        }
-
-        function updateGear(speed) {
-            // Simple logic for gear simulation (assuming 5 speed bike)
-            // This is purely visual since we don't have engine RPM data
-            let gear = 'N';
-            if (speed === 0) gear = 'N';
-            else if (speed < 15) gear = '1';
-            else if (speed < 30) gear = '2';
-            else if (speed < 50) gear = '3';
-            else if (speed < 75) gear = '4';
-            else if (speed < 100) gear = '5';
-            else gear = '6'; // Overdrive
-
-            gearDisplay.innerText = gear;
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            timeDisplay.innerText = `${hours}:${minutes}`;
-        }
-
-        // --- Utilities ---
-        function deg2rad(deg) {
-            return deg * (Math.PI/180);
-        }
-
-        function toggleUnit() {
-            useMetric = !useMetric;
-            if (useMetric) {
-                unitToggle.innerText = "KMH";
-                unitDisplay.innerText = "KM/H";
-            } else {
-                unitToggle.innerText = "MPH";
-                unitDisplay.innerText = "MPH";
-            }
-            // Trigger a visual update if we have last known data
-            if (totalSpeedSamples > 0) {
-                 // Re-calculate approximate current speed based on average for immediate feedback
-                 // or just wait for next GPS tick. Let's just wait for tick, 
-                 // but update labels immediately.
+                btBtn.classList.remove('active');
+                btBtn.innerText = "BT OFF";
             }
         }
 
-        function simulateBluetooth() {
-            // Visual flair: simulate searching then connecting
-            setTimeout(() => {
-                btIcon.classList.add('active');
-            }, 1500);
+        function showToast(msg) {
+            toast.innerText = msg;
+            toast.style.opacity = 1;
+            setTimeout(() => { toast.style.opacity = 0; }, 3000);
         }
 
     </script>
