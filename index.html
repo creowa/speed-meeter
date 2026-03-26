@@ -3,343 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hero Xtreme 125R - Pro System</title>
+    <title>Hero Xtreme - Auto Connect System</title>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
-        /* --- CSS STYLES --- */
         :root {
             --hero-red: #ff0033;
-            --hero-blue: #00ccff;
-            --bg-dark: #050505;
-            --panel-bg: #111;
+            --hero-blue: #00ccff; /* Connection Color */
+            --hero-black: #050505;
         }
-
-        * { box-sizing: border-box; user-select: none; }
 
         body {
             margin: 0; padding: 0;
-            background-color: var(--bg-dark);
+            background-color: var(--hero-black);
             color: #fff;
             font-family: 'Orbitron', sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Header */
-        header {
-            padding: 15px;
-            background: #111;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--hero-red);
-        }
-        .brand { font-family: 'Black Ops One'; color: var(--hero-red); font-size: 1.2rem; }
-        
-        /* Main Dashboard */
-        main {
-            flex: 1;
+        /* --- Start Overlay (Permission Gate) --- */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
+            text-align: center;
+            padding: 20px;
         }
 
-        /* Gauge */
-        .gauge-container { position: relative; width: 280px; height: 280px; }
+        .hero-title {
+            font-family: 'Black Ops One'; color: var(--hero-red);
+            font-size: 2rem; margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--hero-red);
+        }
+
+        .connect-btn {
+            background: transparent;
+            color: var(--hero-blue);
+            border: 2px solid var(--hero-blue);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Orbitron';
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 5px;
+            box-shadow: 0 0 15px var(--hero-blue);
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            margin-top: 20px; font-size: 0.9rem; color: #888;
+        }
+
+        /* --- Main Dashboard --- */
+        main {
+            display: none; /* Hidden until connected */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header {
+            width: 100%; padding: 15px;
+            display: flex; justify-content: space-between;
+            background: #111; border-bottom: 2px solid var(--hero-red);
+            align-items: center;
+        }
+
+        .indicator {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.8rem; color: #555;
+        }
+        .indicator.active { color: var(--hero-blue); text-shadow: 0 0 5px var(--hero-blue); }
+        .dot { width: 8px; height: 8px; background: #333; border-radius: 50%; }
+        .dot.active { background: var(--hero-blue); box-shadow: 0 0 8px var(--hero-blue); }
+
+        .gauge-container {
+            position: relative; width: 300px; height: 300px;
+            margin-top: 30px;
+        }
+
         .gauge-svg { transform: rotate(135deg); width: 100%; height: 100%; }
-        .gauge-bg { fill: none; stroke: #333; stroke-width: 10; }
+        .gauge-bg { fill: none; stroke: #222; stroke-width: 10; }
         .gauge-fill { 
             fill: none; stroke: var(--hero-red); stroke-width: 10; 
-            stroke-dasharray: 580; stroke-dashoffset: 580;
-            transition: stroke-dashoffset 0.2s;
+            stroke-dasharray: 620; stroke-dashoffset: 620;
+            transition: stroke-dashoffset 0.1s linear;
             stroke-linecap: round;
         }
-        
-        .digital-display {
+
+        .digital-readout {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -40%);
             text-align: center;
         }
-        .speed-val { font-size: 4rem; font-weight: 900; line-height: 1; text-shadow: 0 0 10px rgba(255,0,51,0.5); }
-        .unit { font-size: 1rem; color: #888; }
 
-        /* Controls */
-        .controls {
-            display: flex; gap: 10px; margin-top: 20px;
-        }
-        .btn {
-            background: #222; border: 1px solid #444; color: white;
-            padding: 10px 20px; font-family: 'Orbitron'; cursor: pointer;
-            border-radius: 4px; text-transform: uppercase; font-size: 0.8rem;
-        }
-        .btn:hover { background: #333; }
-        .btn.active { background: var(--hero-blue); color: #000; border-color: var(--hero-blue); }
-        .btn-danger { border-color: var(--hero-red); color: var(--hero-red); }
-        
-        /* History Panel (Backend Data) */
-        #history-panel {
-            background: var(--panel-bg);
-            padding: 15px;
-            border-top: 1px solid #333;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .history-title { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
-        .ride-log {
-            display: flex; justify-content: space-between;
-            font-size: 0.8rem; padding: 8px 0;
-            border-bottom: 1px solid #222;
-        }
-        .ride-log span:first-child { color: var(--hero-red); }
+        .speed-val { font-size: 4.5rem; font-weight: 900; line-height: 1; }
+        .unit { font-size: 1rem; color: #888; margin-top: 5px; }
 
-        /* Status Toast */
-        #toast {
-            position: absolute; bottom: 220px;
-            background: rgba(0,0,0,0.8); color: #fff;
-            padding: 10px 20px; border-radius: 5px;
-            opacity: 0; transition: opacity 0.3s;
-            pointer-events: none; border: 1px solid var(--hero-blue);
+        /* Scanning Animation */
+        .scan-line {
+            width: 100%; height: 2px;
+            background: var(--hero-blue);
+            position: absolute; top: 0;
+            animation: scan 2s infinite linear;
+            box-shadow: 0 0 10px var(--hero-blue);
+            display: none;
+        }
+        .scan-line.scanning { display: block; }
+
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px var(--hero-blue); }
+            50% { box-shadow: 0 0 25px var(--hero-blue); }
+            100% { box-shadow: 0 0 5px var(--hero-blue); }
         }
 
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand">XTREME SYS</div>
-        <div style="font-size:0.8rem; color:#666;">v2.0 PRO</div>
-    </header>
+    <!-- 1. Permission / Connect Overlay -->
+    <div id="overlay">
+        <div class="hero-title">XTREME LINK</div>
+        <div class="scan-line" id="scan-line"></div>
+        <p class="status-text" id="status-msg">Tap to Auto-Connect Bike ECU</p>
+        <br>
+        <button class="connect-btn" id="btn-connect" onclick="connectBike()">CONNECT BIKE</button>
+    </div>
 
-    <main>
-        <div class="gauge-container">
-            <svg class="gauge-svg" viewBox="0 0 240 240">
-                <circle class="gauge-bg" cx="120" cy="120" r="100"></circle>
-                <circle id="gauge-bar" class="gauge-fill" cx="120" cy="120" r="100"></circle>
-            </svg>
-            <div class="digital-display">
-                <div id="speed" class="speed-val">0</div>
-                <div class="unit">KM/H</div>
+    <!-- 2. Main Dashboard -->
+    <main id="dashboard">
+        <div class="header">
+            <div style="font-family:'Black Ops One'; color:var(--hero-red)">HERO</div>
+            <div class="indicator" id="bt-ind">
+                <div class="dot" id="bt-dot"></div>
+                <span id="bt-text">DISCONNECTED</span>
             </div>
         </div>
 
-        <div class="controls">
-            <button id="start-btn" class="btn" onclick="startTracking()">Start Ride</button>
-            <button id="stop-btn" class="btn btn-danger" onclick="stopTracking()" disabled>End & Save</button>
-            <button id="bt-btn" class="btn" onclick="toggleBluetooth()">BT OFF</button>
+        <div class="gauge-container">
+            <svg class="gauge-svg" viewBox="0 0 240 240">
+                <circle class="gauge-bg" cx="120" cy="120" r="105"></circle>
+                <circle id="gauge-bar" class="gauge-fill" cx="120" cy="120" r="105"></circle>
+            </svg>
+            <div class="digital-readout">
+                <div id="speed-display" class="speed-val">0</div>
+                <div class="unit">KM/H</div>
+            </div>
         </div>
-
-        <div id="toast">Connecting to Backend...</div>
+        
+        <div style="margin-top: 20px; color: #666; font-size: 0.8rem;">
+            SYSTEM: ONLINE<br>
+            DATA SOURCE: BLUETOOTH ECU
+        </div>
     </main>
 
-    <!-- Backend Data Display -->
-    <div id="history-panel">
-        <div class="history-title">RIDE HISTORY (From Backend)</div>
-        <div id="history-list">Loading...</div>
-    </div>
-
     <script>
-        /* --- FRONTEND LOGIC --- */
-        
-        // Configuration
-        const API_URL = 'http://localhost:3000/api'; // Change this if hosting online
-        
-        // State
-        let isTracking = false;
-        let isBluetoothMode = false;
-        let watchId = null;
-        let startTime = 0;
-        let maxSpeed = 0;
-        let totalDist = 0;
-        
-        // GPS Vars
-        let lastPos = null;
-        let lastTime = 0;
+        // --- CONFIGURATION ---
+        // NOTE: Real Hero Service UUIDs are proprietary. 
+        // This uses a standard Heart Rate Monitor UUID as a DEMO. 
+        // If you have the specific UUID for your bike, replace 'heart_rate' below.
+        const HERO_SERVICE_UUID = '0000180d-0000-1000-8000-00805f9b34fb'; 
+        const HERO_CHARACTERISTIC_UUID = '00002a37-0000-1000-8000-00805f9b34fb';
 
-        // Elements
-        const speedEl = document.getElementById('speed');
+        let deviceCache = null;
+        let characteristicCache = null;
+
+        const overlay = document.getElementById('overlay');
+        const dashboard = document.getElementById('dashboard');
+        const statusMsg = document.getElementById('status-msg');
+        const btnConnect = document.getElementById('btn-connect');
+        const scanLine = document.getElementById('scan-line');
+        const speedDisplay = document.getElementById('speed-display');
         const gaugeBar = document.getElementById('gauge-bar');
-        const startBtn = document.getElementById('start-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const btBtn = document.getElementById('bt-btn');
-        const historyList = document.getElementById('history-list');
-        const toast = document.getElementById('toast');
+        const btDot = document.getElementById('bt-dot');
+        const btText = document.getElementById('bt-text');
 
-        // --- INITIALIZATION ---
-        window.onload = () => {
-            fetchHistory(); // Load data from backend on start
-        };
-
-        // --- GPS FUNCTIONS ---
-        function startTracking() {
-            if (!navigator.geolocation) {
-                showToast("GPS not supported");
+        // --- AUTO CONNECT FUNCTION ---
+        async function connectBike() {
+            // Check if Web Bluetooth is supported
+            if (!navigator.bluetooth) {
+                alert("Web Bluetooth is not supported. Use Chrome on Android.");
                 return;
             }
 
-            isTracking = true;
-            startTime = Date.now();
-            maxSpeed = 0;
-            totalDist = 0;
-            lastPos = null;
-            
-            // UI Updates
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
-            startBtn.classList.add('active');
+            // Update UI to "Scanning"
+            statusMsg.innerText = "Scanning for Hero Xtreme ECU...";
+            btnConnect.disabled = true;
+            btnConnect.style.opacity = "0.5";
+            scanLine.classList.add('scanning');
 
-            watchId = navigator.geolocation.watchPosition(updatePosition, gpsError, {
-                enableHighAccuracy: true,
-                maximumAge: 0,
-                timeout: 5000
-            });
-            
-            showToast("Ride Started");
+            try {
+                console.log('Requesting Bluetooth Device...');
+                
+                // 1. REQUEST DEVICE (This opens the popup)
+                // In the future, you can try to get previously connected devices automatically,
+                // but the first time you MUST select the device.
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [HERO_SERVICE_UUID] }],
+                    optionalServices: [HERO_SERVICE_UUID] // Ensure we can access the service
+                });
+
+                deviceCache = device;
+                
+                // Listen for disconnection
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+
+                console.log('Connecting to GATT Server...');
+                statusMsg.innerText = "Pairing...";
+                const server = await device.gatt.connect();
+
+                console.log('Getting Service...');
+                const service = await server.getPrimaryService(HERO_SERVICE_UUID);
+
+                console.log('Getting Characteristic...');
+                const characteristic = await service.getCharacteristic(HERO_CHARACTERISTIC_UUID);
+                characteristicCache = characteristic;
+
+                // Start listening to data
+                await characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged', handleData);
+                
+                console.log('Notifications started');
+                onConnected(); // Switch UI to Dashboard
+
+            } catch (error) {
+                console.error('Connection failed!', error);
+                statusMsg.innerText = "Connection Failed. Try Again.";
+                scanLine.classList.remove('scanning');
+                btnConnect.disabled = false;
+                btnConnect.style.opacity = "1";
+            }
         }
 
-        function stopTracking() {
-            if (!isTracking) return;
-            isTracking = false;
-
-            navigator.geolocation.clearWatch(watchId);
+        // --- DATA HANDLER ---
+        function handleData(event) {
+            const value = event.target.value;
             
-            // UI Updates
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            startBtn.classList.remove('active');
-
-            // Send Data to Backend
-            saveRideToBackend();
-        }
-
-        function updatePosition(position) {
-            const now = Date.now();
+            // DEMO LOGIC: 
+            // Since we don't have the real Hero datasheet, we simulate reading a byte.
+            // In a real scenario, you would parse specific bytes (e.g., value.getUint8(0))
+            // to get actual speed/RPM.
             
-            if (lastPos) {
-                // Calculate Distance & Speed
-                const dLat = (position.coords.latitude - lastPos.latitude) * (Math.PI/180);
-                const dLon = (position.coords.longitude - lastPos.longitude) * (Math.PI/180);
-                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                          Math.cos(lastPos.latitude * (Math.PI/180)) * Math.cos(position.coords.latitude * (Math.PI/180)) * 
-                          Math.sin(dLon/2) * Math.sin(dLon/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                const distKm = 6371 * c;
-                const timeHours = (now - lastTime) / 3600000;
-
-                let speed = 0;
-                if (timeHours > 0) {
-                    speed = distKm / timeHours;
-                }
-
-                // Update State
-                totalDist += distKm;
-                if (speed > maxSpeed) maxSpeed = speed;
-
-                // Update Dashboard
-                updateDashboard(speed);
+            // SIMULATING SPEED INCREASE FOR DEMO VISUALS:
+            // (Replace this block with actual byte parsing logic)
+            let simulatedSpeed = 0;
+            if (value.byteLength > 0) {
+                // Just taking the first byte as a random number for demo
+                let rawData = value.getUint8(0); 
+                // Map 0-255 to 0-120 kmh for demo purposes
+                simulatedSpeed = Math.floor((rawData / 255) * 120); 
             }
 
-            lastPos = position;
-            lastTime = now;
+            updateDashboard(simulatedSpeed);
         }
 
+        // --- UI UPDATES ---
         function updateDashboard(speed) {
-            // Update Text
-            speedEl.innerText = Math.floor(speed);
-
-            // Update Arc (Max 140kmh)
-            const maxScale = 140;
-            let percent = speed / maxScale;
-            if (percent > 1) percent = 1;
-            const offset = 580 - (580 * percent);
+            speedDisplay.innerText = speed;
+            
+            // Arc Logic (Max 120kmh)
+            const maxSpeed = 120;
+            const percentage = speed / maxSpeed;
+            const offset = 620 - (620 * percentage);
             gaugeBar.style.strokeDashoffset = offset;
-        }
 
-        function gpsError() {
-            showToast("GPS Signal Lost");
-        }
-
-        // --- BACKEND INTEGRATION ---
-        async function saveRideToBackend() {
-            const duration = Date.now() - startTime;
-            const rideData = {
-                date: new Date().toISOString(),
-                distance: parseFloat(totalDist.toFixed(2)),
-                maxSpeed: Math.floor(maxSpeed),
-                duration: duration // in milliseconds
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/rides`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(rideData)
-                });
-                
-                if (response.ok) {
-                    showToast("Ride Saved to Server!");
-                    fetchHistory(); // Refresh list
-                } else {
-                    showToast("Error saving ride");
-                }
-            } catch (error) {
-                console.error(error);
-                showToast("Server Connection Failed");
-            }
-        }
-
-        async function fetchHistory() {
-            try {
-                const response = await fetch(`${API_URL}/rides`);
-                const data = await response.json();
-                
-                historyList.innerHTML = '';
-                if (data.length === 0) {
-                    historyList.innerHTML = '<div style="color:#555; text-align:center;">No rides recorded yet.</div>';
-                    return;
-                }
-
-                // Show last 5 rides
-                data.slice(-5).reverse().forEach(ride => {
-                    const dateObj = new Date(ride.date);
-                    const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    
-                    const div = document.createElement('div');
-                    div.className = 'ride-log';
-                    div.innerHTML = `
-                        <span>${ride.distance} km</span>
-                        <span>${ride.maxSpeed} km/h</span>
-                        <span style="color:#888; font-size:0.7rem;">${dateStr}</span>
-                    `;
-                    historyList.appendChild(div);
-                });
-
-            } catch (error) {
-                historyList.innerHTML = '<div style="color:red;">Failed to connect to Backend.</div>';
-            }
-        }
-
-        // --- UTILS ---
-        function toggleBluetooth() {
-            isBluetoothMode = !isBluetoothMode;
-            if (isBluetoothMode) {
-                btBtn.classList.add('active');
-                btBtn.innerText = "BT ON";
-                showToast("Bluetooth Voice Active");
+            // Color shift at high speed
+            if (speed > 80) {
+                gaugeBar.style.stroke = "#ff0000";
             } else {
-                btBtn.classList.remove('active');
-                btBtn.innerText = "BT OFF";
+                gaugeBar.style.stroke = "var(--hero-red)";
             }
         }
 
-        function showToast(msg) {
-            toast.innerText = msg;
-            toast.style.opacity = 1;
-            setTimeout(() => { toast.style.opacity = 0; }, 3000);
+        function onConnected() {
+            overlay.style.display = 'none';
+            dashboard.style.display = 'flex';
+            btDot.classList.add('active');
+            btText.innerText = "ECU CONNECTED";
+            btText.classList.add('active');
         }
+
+        function onDisconnected() {
+            dashboard.style.display = 'none';
+            overlay.style.display = 'flex';
+            scanLine.classList.remove('scanning');
+            statusMsg.innerText = "Bike Disconnected. Tap to Reconnect.";
+            btnConnect.disabled = false;
+            btnConnect.style.opacity = "1";
+            btDot.classList.remove('active');
+            btText.innerText = "DISCONNECTED";
+        }
+
+        // --- AUTO-RECONNECT ATTEMPT ON LOAD ---
+        window.onload = () => {
+            console.log("System Ready. Waiting for user interaction to start Bluetooth scan.");
+            // Browsers block auto-starting Bluetooth without a click.
+            // The user MUST click the "CONNECT BIKE" button once.
+        };
 
     </script>
 </body>
